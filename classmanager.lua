@@ -1,9 +1,4 @@
--- Middleclass quasiproxy that does really cool stuff.
-
--- Middleclass does one very bad thing: It hijacks all metamethods except __index.
--- This becomes exceptionally annoying when trying to do anything useful with an instance root table. Rather than set up replacement metamethods, we just nuke the placeholder responsible for the issue.
--- That being said, defining c.__call (etc) requires adding to the methods table like so:
--- c.__metamethods = {"__call"}; c.__call = function (self) doStuff() end
+-- Middleclass and Classy have their quirks. So does Lash, but Lash happens to be built to preference, so...
 
 -- Magic trick: To require and init an instance, now we just use classes["whatever"](args). Everything is nicely indexed for us.
 -- Just don't try to do anything with a class that doesn't exist. Bad mojo.
@@ -16,9 +11,8 @@ local index = function (self,k)
 end
 
 local newindex = function (self, k, v)
-	if not k and type(v) == "table" then return end
-	if not (v.name or v.class) and getmetatable(v) then return end
-	return rawset{self,k,v}
+	if not class.classinfo[v] then return end
+	return rawset(self,k,v)
 end
 
 classes = classes or setmetatable(
