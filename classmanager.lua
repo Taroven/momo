@@ -3,6 +3,7 @@
 -- Magic trick: To require and init an instance, now we just use classes["whatever"](args). Everything is nicely indexed for us.
 -- Just don't try to do anything with a class that doesn't exist. Bad mojo.
 local rawset,rawget = rawset,rawget
+class = class or require"lash"
 
 local index = function (self,k)
 	if not k then return end
@@ -23,9 +24,6 @@ classes = classes or setmetatable(
 		__call = index,
 	}
 )
-
-class = class or require("middleclass")
-class.Object.__metamethods = {"__tostring"}
 
 -- Note: It's tempting to include allowance for singletons, but if we ever want one we can just assign a global. Not worth the trouble here.
 return class, classes
