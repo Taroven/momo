@@ -34,7 +34,6 @@ local pairs,ipairs = pairs,ipairs
 local table,string = table,string
 local concat = table.concat or concat
 local loadstring = loadstring or load
-local subclass
 
 -- index of allowed metamethods (__index is reserved)
 local metamethods = {
@@ -60,6 +59,21 @@ end
 
 local class_ipairs = function (self)
   return ipairs(classinfo[self].o_meta.__index)
+end
+
+local super_mt = {
+	__index = function (self, k) return self.__k[k] or self.__i[k] end,
+	__newindex = function (self, k, v)
+		self.__k[k] = v
+		self.__i[#self.__i + 1] = v
+	end,
+	__pairs = function (self) return pairs(self.__k) end,
+	__ipairs = function (self) return ipairs(self.__i) end,
+	__len = function (self) return #self.__i end,
+}
+
+local supertable = function ()
+	return setmetatable({__k = {}, __i = {}}, super_mt)
 end
 
 local constructor = function (self, ...)
@@ -138,7 +152,8 @@ local linearize = function (info)
 end
 
 -- Classy does not provide methods for inheritance after birth.
--- This is a bit of a monkey patch, but it does the job nicely.
+-- This is a bit of a monkey patch, but it does the job.
+local mixin
 local include = function (self, ...)
 	local info = classinfo[self]
 	local index = classinfo[self].o_meta.__index
@@ -146,15 +161,13 @@ local include = function (self, ...)
 	local includes = {...}
 	for i = #includes, 1, -1 do
 		local pinfo = classinfo[includes[i]]
-		if pinfo then
-			local exists
-			for _,v in ipairs(info.supers) do
-				if includes[i] == v then exists = true; break end
+		if pinfo then -- metatable abuse: info.supers is a lie.
+			if not info.supers[includes[i]] then
+				info.supers[includes[i]] = includes[i]
+ 				pinfo.subclasses[self] = self
  			end
- 			if not exists then
- 				table.insert(info.supers,1,includes[i])
- 			end
- 			pinfo.subclasses[self] = self
+ 		else -- NTS: if we somehow run into classinfo[includes[i]] ceasing to exist between mixin -> include, something is very wrong with everything.
+ 			mixin(self, includes[i])
  		end
 	end
 	
@@ -169,7 +182,7 @@ local include = function (self, ...)
 end
 
 -- Non-class includes
-local mixin = function (self, ...)
+mixin = function (self, ...)
 	local mixins = {...}
 	for _,mixin in ipairs(mixins) do
 		if classinfo[mixin] then include(self,mixin) else
@@ -192,9 +205,9 @@ local newclass = function (name, ...)
   }
   local info = {
     name = name,
-    subclasses = setmetatable( {}, mode_k_meta ), -- subclass references for propagate()
+    subclasses = setmetatable( {}, weakmt ), -- subclass references for propagate()
     members = {}, -- k/v pairs added to object instances, either added or included
-    supers = {}, -- Added: list of inherited classes for include()
+    supers = supertable(), -- Added: list of inherited classes for include()
     mixins = {}, -- Added: list of tables from mixin() (only for diagnostic purposes)
     o_meta = o_meta, -- Metatable applied to object instances
     c_meta = { -- Metatable applied to class objects
@@ -224,7 +237,8 @@ local newclass = function (name, ...)
   return setmetatable( cls, info.c_meta )
 end
 
-subclass = function (self, name, ...)
+-- NTS: localized above
+local subclass = function (self, name, ...)
 	return newclass(name, self, ...)
 end
 
@@ -233,6 +247,14 @@ lash.class = newclass
 lash.include = include
 lash.mixin = mixin
 lash.subclass = subclass
+
+
+lash.init = {
+	pre = function () end,
+	post = function () end,
+	mixin = function () end,
+}
+
 
 setmetatable(lash, { __call = function (_, ...) return lash.class(...) end })
 return lash
