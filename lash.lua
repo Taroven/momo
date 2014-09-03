@@ -173,7 +173,8 @@ local mixin = function (self, ...)
 	local mixins = {...}
 	for _,mixin in ipairs(mixins) do
 		if classinfo[mixin] then include(self,mixin) else
-			mixins[mixin] = mixin
+			local info = classinfo[self]
+			info.mixins[mixin] = mixin
 			for k,v in pairs(mixin) do self[k] = v end
 		end
 	end
