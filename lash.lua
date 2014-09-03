@@ -233,6 +233,7 @@ local newclass = function (name, ...)
   cls.propagate = propagate
   cls.subclass = subclass
   
+  mixin(cls, lash.classbase)
   include(cls, ...)
   return setmetatable( cls, info.c_meta )
 end
@@ -242,19 +243,12 @@ local subclass = function (self, name, ...)
 	return newclass(name, self, ...)
 end
 
+lash.classbase = {}
 lash.classinfo = classinfo
 lash.class = newclass
 lash.include = include
 lash.mixin = mixin
 lash.subclass = subclass
-
-
-lash.init = {
-	pre = function () end,
-	post = function () end,
-	mixin = function () end,
-}
-
 
 setmetatable(lash, { __call = function (_, ...) return lash.class(...) end })
 return lash
