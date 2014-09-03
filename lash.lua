@@ -238,7 +238,6 @@ local newclass = function (name, ...)
   return setmetatable( cls, info.c_meta )
 end
 
--- NTS: localized above
 local subclass = function (self, name, ...)
 	return newclass(name, self, ...)
 end
@@ -250,5 +249,7 @@ lash.include = include
 lash.mixin = mixin
 lash.subclass = subclass
 
-setmetatable(lash, { __call = function (_, ...) return lash.class(...) end })
+lash.Object = newclass("Object")
+
+setmetatable(lash, { __call = function (_, ...) return lash.subclass(lash.Object, ...) end })
 return lash
