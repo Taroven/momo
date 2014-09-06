@@ -1,3 +1,5 @@
+if _LOG then return _LOG end
+
 local util = util or require"util"
 
 local errorlevel,lastlevel
@@ -8,7 +10,7 @@ local errorlevels = {
 	"ERROR",
 }
 
-logstack = logstack or {}
+local logstack = {}
 local pop = function ()
 	if not errorlevel then return end
 	while stack[1] do
@@ -77,4 +79,5 @@ log.File = function (path)
 	return MOAILogMgr.openFile(path)
 end
 
+_LOG = log
 return log
