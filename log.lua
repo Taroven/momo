@@ -1,5 +1,4 @@
 local util = util or require"util"
-local class = class or require"class"
 
 local errorlevel,lastlevel
 local errorlevels = {
