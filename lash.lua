@@ -251,5 +251,5 @@ lash.subclass = subclass
 
 lash.Object = newclass("Object")
 
-setmetatable(lash, { __call = function (_, ...) return lash.subclass(lash.Object, ...) end })
+setmetatable(lash, { __call = function (_, name, super, ...) return lash.subclass(super or lash.Object, name, ...) end })
 return lash
