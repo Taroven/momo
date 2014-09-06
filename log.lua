@@ -24,7 +24,7 @@ local pop = function ()
 	end
 end
 
-local push = function (obj, method, level, ...)
+local push = function (obj, level, method, ...)
 	util.argcheck(self,1,"table")
 	local t = {...}
 	local entry = {}
@@ -62,7 +62,7 @@ log.File = function (path)
 end
 
 local mt = {
-	__call = function (_, obj, method, level, ...) return push(obj, method, level, ...) end
+	__call = function (_, obj, level, method, ...) return push(obj, level, method, ...) end
 }
 setmetatable(log, mt)
 
