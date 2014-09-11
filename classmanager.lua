@@ -18,7 +18,7 @@ end
 
 local index = function (self,k)
 	if not k then return end
-	rawset(self, k, rawget(self,k) or require("classes." .. k)
+	rawset(self, k, rawget(self,k) or require("classes." .. k))
 	return rawget(self,k)
 end
 
