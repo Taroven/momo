@@ -48,4 +48,8 @@ c.WindowToGrid = function (self,x,y)
 	return self:WorldCoordToGridCell(self._layer:wndToWorld(x,y))
 end
 
+c.SetGridRepeat = function (self, rep)
+	return self._grid:setRepeat(rep)
+end
+
 return g

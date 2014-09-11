@@ -18,7 +18,8 @@ c.GetViewport = function (self) return self._viewport end
 
 c.ShowLayer = function (self)
 	if self._layer then
-		return self._layer:setViewport(self._viewport)
+		self._layer:setViewport(self._viewport)
+		self._layer:pushRenderPass()
 	end
 end
 

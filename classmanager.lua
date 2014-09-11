@@ -10,7 +10,7 @@ local util = util or require 'util'
 local rawset,rawget = rawset,rawget
 
 local obj = class.Object
-obj.Log = function (self, level, method ...)
+obj.Log = function (self, level, method, ...)
 	util.argcheck(method,2,'string')
 	util.argcheck(level,3,'number','nil')
 	return log(self, level, method, ...)
