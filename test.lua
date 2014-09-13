@@ -1,5 +1,4 @@
-class = require"middleclass"
-class.Object.__metamethods = {"__tostring"}
+class = require"lash"
 
 tp = function (t) print(t); for k,v in pairs(t) do print(k,v) end; print(" ") end
 
@@ -23,21 +22,27 @@ c3 = class("test 3")
 c3.t1 = function (self) print(self,"c3.t1") end
 c3.t3 = function (self) print(self,"c3.t3") end
 
-super = class("super")
-super.static.t1 = function (self) print(self,"super.static.t1") end
-super.static.t2 = function (self) print(self,"super.static.t2") end
-super.static.t3 = function (self) print(self,"super.static.t3") end
-
 c1c = c1()
-c1s = super:subclass("c1s"):include(c1)
+c1s = class("c1s",c1)
 c1sc = c1s()
+
+print(rawget(c1,"include"))
+print(rawget(c1,"subclass"))
+
 c2s = c1s:subclass("c2s")
 c2sc = c2s()
 
 c12 = class("c12"):include(c1,c2,c3)
 c12c = c12()
 
+codd = class("oddball", c1)
+codd.t2 = function (self) print(self,"oddball") end
+coddc = codd()
+
+c64 = class("c64", c12, codd)()
+
 print("c1"); test(c1); test(c1c)
 print("c1s"); test(c1s); test(c1sc)
 print("c2s"); test(c2s); test(c2sc)
 print("c12"); test(c12); test(c12c)
+print("c64"); test(c64)

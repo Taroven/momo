@@ -12,9 +12,11 @@ while #types > 0 do types[types[1]] = table.remove(types,1); end
 local otype = type
 util.type = function (value, ...)
    local n = select("#", ...)
-   if n == 0 then return otype(value); end
+   if n == 0 then return otype(value) end
 	 for i=1,n do
-      if otype(value) == select(i, ...) then return (otype(value),i); end 
+      if otype(value) == select(i, ...) then
+      	return otype(value), i
+      end
    end
 end
 
@@ -142,7 +144,7 @@ t.print = function (t,tab,enc)
 	util.argcheck(enc,3,"table","nil")
 	tab = tab or 0
 	enc = enc or {}
-	for k,v in t.spairs(t)
+	for k,v in t.spairs(t) do
 		if type(v) == "table" then
 			local e = tostring(v)
 			if enc[e] then
@@ -199,8 +201,8 @@ end
 
 s.totype = function (s)
 	if tonumber(s) then return tonumber(s)
-	if s == "true" then return true
-	if s == "false" then return false
+	elseif s == "true" then return true
+	elseif s == "false" then return false
 	else return s
 	end
 end

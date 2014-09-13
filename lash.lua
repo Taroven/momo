@@ -1,4 +1,5 @@
 local lash = {
+	classes      = {},
 	_VERSION     = 'lash v0.1',
 	_DESCRIPTION = 'Lua OO library based on Classy with some tweaks',
 	_URL         = 'https://github.com/taroven/lash',
@@ -159,6 +160,11 @@ local include = function (self, ...)
 	local index = classinfo[self].o_meta.__index
 	
 	local includes = {...}
+	for i,v in ipairs(includes) do
+		if type(v) == 'string' then
+			includes[i] = lash.require(v)
+		end
+	end
 	for i = #includes, 1, -1 do
 		local pinfo = classinfo[includes[i]]
 		if pinfo then -- metatable abuse: info.supers is a lie.
@@ -185,7 +191,8 @@ end
 mixin = function (self, ...)
 	local mixins = {...}
 	for _,mixin in ipairs(mixins) do
-		if classinfo[mixin] then include(self,mixin) else
+		if classinfo[mixin] then include(self,mixin)
+		elseif type(mixin) == "table" then
 			local info = classinfo[self]
 			info.mixins[mixin] = mixin
 			for k,v in pairs(mixin) do self[k] = v end
@@ -195,7 +202,9 @@ end
 
 -- create the necessary metadata for the class, setup the inheritance
 -- hierarchy, set a suitable metatable, and return the class
+local subclass
 local newclass = function (name, ...)
+	assert( not lash.classes[name], "class " .. name .. " already exists")
   assert( type( name ) == "string", "class name must be a string" )
   local cls, index = {}, {}
   local o_meta = {
@@ -235,19 +244,40 @@ local newclass = function (name, ...)
   
   mixin(cls, lash.classbase)
   include(cls, ...)
-  return setmetatable( cls, info.c_meta )
+  local final = setmetatable( cls, info.c_meta )
+  lash.classes[name] = final
+  return final
 end
 
-local subclass = function (self, name, ...)
+local tprint = function (...)
+	local t = {...}
+	for i,v in ipairs(t) do
+		print(i,type(v),tostring(v))
+	end
+end
+
+subclass = function (self, name, ...)
 	return newclass(name, self, ...)
+end
+
+local loadclasses = function (...)
+	local t = {}
+	for i = 1, select('#',...) do
+		local v = select(i,...)
+		if not lash.classes[v] then require(lash.classpath .. '.' .. v) end
+		t[#t + 1] = lash.classes[v]
+	end
+	return (unpack or table.unpack)(t)
 end
 
 lash.classbase = {}
 lash.classinfo = classinfo
+lash.classpath = "classes"
 lash.class = newclass
 lash.include = include
 lash.mixin = mixin
 lash.subclass = subclass
+lash.require = loadclasses
 
 lash.Object = newclass("Object")
 
