@@ -135,6 +135,7 @@ local linearize = function (info)
 	local super = {}
   
   for i,parent in ipairs(info.supers) do
+  	--print("linearize",info.name,classinfo[parent].name)
     if classinfo[parent] then
     	super[#super + 1] = parent
     end
@@ -168,10 +169,9 @@ local include = function (self, ...)
 	for i = #includes, 1, -1 do
 		local pinfo = classinfo[includes[i]]
 		if pinfo then -- metatable abuse: info.supers is a lie.
-			if not info.supers[includes[i]] then
-				info.supers[includes[i]] = includes[i]
- 				pinfo.subclasses[self] = self
- 			end
+			--print("include",includes[i], pinfo)
+			info.supers[#info.supers + 1] = includes[i]
+ 			pinfo.subclasses[self] = self
  		else -- NTS: if we somehow run into classinfo[includes[i]] ceasing to exist between mixin -> include, something is very wrong with everything.
  			mixin(self, includes[i])
  		end
@@ -216,7 +216,7 @@ local newclass = function (name, ...)
     name = name,
     subclasses = setmetatable( {}, weakmt ), -- subclass references for propagate()
     members = {}, -- k/v pairs added to object instances, either added or included
-    supers = supertable(), -- Added: list of inherited classes for include()
+    supers = {}, -- Added: list of inherited classes for include()
     mixins = {}, -- Added: list of tables from mixin() (only for diagnostic purposes)
     o_meta = o_meta, -- Metatable applied to object instances
     c_meta = { -- Metatable applied to class objects
