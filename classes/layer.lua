@@ -1,9 +1,10 @@
 local c = class("layer","viewmanager")
+class.require("propcache")
 
 c.InitLayer = function (self, dimensions)
 	self._layer = MOAILayer2D.new()
 	self._layer._class = self
-	self._layer._cache = classes.propcache(dimensions or self._dimensions)
+	self._layer._cache = class.classes.propcache(dimensions or self._dimensions)
 	self._layer._cache._layer = self._layer
 	
 	self.InitLayer = function (self) return self._layer end -- Just in case this gets called more than once.

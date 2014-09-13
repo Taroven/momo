@@ -1,4 +1,4 @@
-local c = class("grid", classes.layer, classes.tiledeck)
+local c = class("grid", "layer", "tiledeck")
 
 c.InitGrid = function (self, dimensions)
 	self._dimensions = 3
@@ -15,7 +15,7 @@ end
 
 c.GetGrid = function (self)
 	if not self._grid then
-		self._grid = MOAIGrid2D.new()
+		self._grid = MOAIGrid.new()
 		self._grid._class = self
 	end
 	

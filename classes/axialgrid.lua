@@ -2,6 +2,7 @@ local c = class("axialgrid","grid")
 
 -- classes.grid provides us with the building blocks of a graphic grid, only requiring hex initialization and translation
 c.initialize = function (self, ...)
+	for k,v in pairs(getmetatable(self).__index) do print(k,v) end
 	self:InitGrid(3)
 	
 	self:GetGrid():initAxialHexGrid(...)

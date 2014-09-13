@@ -30,14 +30,11 @@
 		-- Continue as normal. Make sure .dimensions is either accurate to your needs or 0/1 if needs are fluid.
 --]]
 
-
-local class = class or require"middleclass"
 local pairs, ipairs, type, tonumber = pairs, ipairs, type, tonumber
 local unpack = unpack or table.unpack
 local newprop, oldprop
 
 local c = class("propcache")
-local s = c.static
 
 c.initialize = function (self, dimensions)
 	self._active = {}
@@ -246,5 +243,4 @@ c.Get = function (self, ...)
 end
 
 c.__call = s.Get
-c.__metamethods = {"__call"}
 return c
