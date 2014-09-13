@@ -40,3 +40,5 @@ c.RemoveCamera = function (self)
 		return self._layer:setCamera(nil)
 	end
 end
+
+return c

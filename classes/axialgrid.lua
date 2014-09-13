@@ -1,4 +1,4 @@
-local c = class("axialgrid",classes.grid)
+local c = class("axialgrid","grid")
 
 -- classes.grid provides us with the building blocks of a graphic grid, only requiring hex initialization and translation
 c.initialize = function (self, ...)

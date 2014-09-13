@@ -1,4 +1,4 @@
-local c = class("layer",classes.viewmanager)
+local c = class("layer","viewmanager")
 
 c.InitLayer = function (self, dimensions)
 	self._layer = MOAILayer2D.new()

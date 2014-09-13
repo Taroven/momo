@@ -52,4 +52,4 @@ c.SetGridRepeat = function (self, rep)
 	return self._grid:setRepeat(rep)
 end
 
-return g
+return c

@@ -45,3 +45,5 @@ end
 c.WrapDeckCoord = function (self, x, y)
 	return self._deck:wrapCoord(x,y)
 end
+
+return c
