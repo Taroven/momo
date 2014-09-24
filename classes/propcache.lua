@@ -57,11 +57,11 @@ c.initialize = function (self, dimensions)
 		
 		OnRemove = function (self)
 			return self._cache._onremove(self)
-		end
+		end,
 		
 		OnAcquire = function (self)
 			return self._cache._onacquire(self)
-		end
+		end,
 	
 		Show = function (self)
 			if self._cache._layer then
@@ -181,7 +181,7 @@ end
 
 -- Sets the mapping function to one of the defaults or a custom get/set table.
 c.SetMapping = function (self, t)
-	util.argcheck(t, 2, "table", "number", "nil")
+	--util.argcheck(t, 2, "table", "number", "nil")
 	t = tonumber(t or 1) and map[t] or t
 	self.Find = t.get or t.find or t.Get or t.Find
 	self.Set = t.set or t.Set
@@ -220,7 +220,7 @@ end
 
 c.GetPropClass = function (self, propclass)
 	if propclass then return self._propclass == propclass
-	else return self._propclass
+	else return self._propclass end
 end
 
 -- Kill a prop by its coords (or index if not on a grid) and remove it from the map (even if inactive or nonexistant)
@@ -242,5 +242,5 @@ c.Get = function (self, ...)
 	return prop:OnAcquire()
 end
 
-c.__call = s.Get
+c.__call = c.Get
 return c

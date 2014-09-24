@@ -1,7 +1,8 @@
+class.require("layer","tiledeck")
 local c = class("grid", "layer", "tiledeck")
 
 c.InitGrid = function (self, dimensions)
-	self._dimensions = 3
+	self._dimensions = dimensions or 2
 	
 	local grid = self:GetGrid()
 	local prop = self:GetGridProp()

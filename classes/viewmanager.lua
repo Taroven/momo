@@ -19,7 +19,7 @@ c.GetViewport = function (self) return self._viewport end
 c.ShowLayer = function (self)
 	if self._layer then
 		self._layer:setViewport(self._viewport)
-		self._layer:pushRenderPass()
+		MOAISim.pushRenderPass(layer)
 	end
 end
 
