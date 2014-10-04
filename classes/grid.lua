@@ -3,8 +3,8 @@
 --
 --]]
 
-class.require('layer','cache')
-local c = class('grid','layer','cache')
+class.require('layer','deck','cache')
+local c = class('grid','layer','deck','cache')
 
 c.InitGrid = function (self)
 	self:SafeSet('dimensions',2)
