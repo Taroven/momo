@@ -1,5 +1,6 @@
 local lash = {
 	classes      = {},
+	local        = {__name = true, __objects = true, __class = true},
 	_VERSION     = 'lash v0.1',
 	_DESCRIPTION = 'Lua OO library based on Classy with some tweaks',
 	_URL         = 'https://github.com/taroven/lash',
@@ -118,7 +119,7 @@ local class_newindex = function (self, k, v)
     info.o_meta.__index.initialize = v
   
   -- Changed: Ignore .class instead of throwing an error
-  elseif k ~= "class" then
+  elseif not lash.local[k] then
     info.members[k] = v
     propagate(self, k)
     for sub in pairs(info.subclasses) do
@@ -204,9 +205,9 @@ end
 -- hierarchy, set a suitable metatable, and return the class
 local subclass
 local newclass = function (name, ...)
-	assert( not lash.classes[name], "class " .. name .. " already exists")
+  assert( not lash.classes[name], "class " .. name .. " already exists")
   assert( type( name ) == "string", "class name must be a string" )
-  local cls, index = {}, {}
+  local cls, index = {__objects = {}}, {}
   local o_meta = {
     __index = index,
     __name = name,
@@ -279,7 +280,35 @@ lash.mixin = mixin
 lash.subclass = subclass
 lash.require = loadclasses
 
-lash.Object = newclass("Object")
+local c = newclass("Object")
+c.Set = function (self, k, v, raw)
+	if (not raw) and type(v) == 'function' then v = v() end
+	self.__objects[k] = v
+	return self.__objects[k]
+end
+
+c.SafeSet = function (self, k, v, raw)
+	if type(self.__objects[k]) == 'nil' then
+		return self:Set(k,v)
+	end
+end
+
+c.Get = function (self, k, default, raw)
+	if (type(self.__objects[k]) == 'nil') and (type(default) ~= 'nil') then
+		self:Set(k,default,raw)
+	end
+	return self.__objects[k]
+end
+
+c.OptSet = function (self, k, v, default, raw)
+	if type(v) == 'nil' then
+		return self:Get(k,default,raw)
+	else
+		return self:Set(k,v,raw)
+	end
+end
+
+lash.Object = c
 
 setmetatable(lash, { __call = function (_, name, super, ...) return lash.subclass(super or lash.Object, name, ...) end })
 return lash
