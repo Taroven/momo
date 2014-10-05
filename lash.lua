@@ -1,6 +1,6 @@
 local lash = {
 	classes      = {},
-	local        = {__name = true, __objects = true, __class = true},
+	local        = {__name = true, __properties = true, __class = true},
 	_VERSION     = 'lash v0.1',
 	_DESCRIPTION = 'Lua OO library based on Classy with some tweaks',
 	_URL         = 'https://github.com/taroven/lash',
@@ -207,7 +207,7 @@ local subclass
 local newclass = function (name, ...)
   assert( not lash.classes[name], "class " .. name .. " already exists")
   assert( type( name ) == "string", "class name must be a string" )
-  local cls, index = {__objects = {}}, {}
+  local cls, index = {__properties = {}}, {}
   local o_meta = {
     __index = index,
     __name = name,
@@ -283,21 +283,21 @@ lash.require = loadclasses
 local c = newclass("Object")
 c.Set = function (self, k, v, raw)
 	if (not raw) and type(v) == 'function' then v = v() end
-	self.__objects[k] = v
-	return self.__objects[k]
+	self.__properties[k] = v
+	return self.__properties[k]
 end
 
 c.SafeSet = function (self, k, v, raw)
-	if type(self.__objects[k]) == 'nil' then
+	if type(self.__properties[k]) == 'nil' then
 		return self:Set(k,v)
 	end
 end
 
 c.Get = function (self, k, default, raw)
-	if (type(self.__objects[k]) == 'nil') and (type(default) ~= 'nil') then
+	if (type(self.__properties[k]) == 'nil') and (type(default) ~= 'nil') then
 		self:Set(k,default,raw)
 	end
-	return self.__objects[k]
+	return self.__properties[k]
 end
 
 c.OptSet = function (self, k, v, default, raw)
