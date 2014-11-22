@@ -9,11 +9,11 @@ local abs = math.abs
 local transpose = {}
 
 c.initialize = function (self)
-	self:SafeSet('dimensions',2)
 	self:SafeSet('grid.repeat',false)
-	self:SafeSet('grid.init','initAxialHexGrid')
+	self:Set('dimensions',2)
+	self:Set('grid.init','initAxialHexGrid')
 	self:Set('grid.transpose',transpose)
-	
+
 	self:InitGrid()
 	return self
 end
