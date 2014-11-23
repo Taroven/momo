@@ -2,18 +2,6 @@ local fs = {paths = {}}
 
 local util = require "util"
 
-local public = {
-	'GetLeadingPath',
-	'AffirmPath',
-	'AffirmFile',
-	'GetFileHandle',
-	'ReadFile',
-	'WriteFile',
-	'LoadFile',
-	'AppendFile',
-	'GetDirectory',
-}
-
 fs.AddPath = function (self, tag, path)
 	util.argcheck(path,3,"string")
 	util.argcheck(tag,2,"string")
@@ -94,7 +82,7 @@ fs.Write = function (self, s, path, append)
 	util.argcheck(path,3,"string")
 	local file = self:GetFileHandle(path, append and 'a+' or 'w+')
 	local src = type(s) == "table" and table.concat(s,"\n") or s
-	if file then
+	if file and src then
 		file:write(s)
 		file:flush()
 		file:close()

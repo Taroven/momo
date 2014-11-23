@@ -1,8 +1,8 @@
-local util = {} 
+local util = {}
 
--- global lookups 
-local type,assert = type,assert 
-local setmetatable, getmetatable  = setmetatable, getmetatable 
+-- global lookups
+local type,assert = type,assert
+local setmetatable, getmetatable  = setmetatable, getmetatable
 
 local types = {"table","function","number","boolean","nil","userdata"}
 while #types > 0 do types[types[1]] = table.remove(types,1); end
@@ -23,80 +23,80 @@ end
 util.typematch = function (value, ...)
 	local n = select("#",...)
 	if n > 0 then for i=1,n do
-    if otype(value) == type(select(i, ...)) then return otype(value),i; end 
+    if otype(value) == type(select(i, ...)) then return otype(value),i; end
   end end
   return (otype(value) == "nil")
 end
 
-util.concat = function (...) 
-   return table.concat({...},'') 
+util.concat = function (...)
+   return table.concat({...},'')
 end
 
-util.gethash = function (data) 
-   local writer = MOAIHashWriter.new() 
-   writer:openMD5() 
-   writer:write( data ) 
-   writer:close() 
-   return writer:getHashHex() 
-end 
+util.gethash = function (data)
+   local writer = MOAIHashWriter.new()
+   writer:openMD5()
+   writer:write( data )
+   writer:close()
+   return writer:getHashHex()
+end
 
-util.typecheck = function (var, varType, default) 
-   if type(var) == varType then 
-      return var 
-   end 
-   return default 
-end 
+util.typecheck = function (var, varType, default)
+   if type(var) == varType then
+      return var
+   end
+   return default
+end
 
--- Much better. 
-util.argcheck = function (value, num, ...) 
-   assert(type(num) == 'number', "Bad argument #2 to 'argcheck' (number expected, got "..type(num)..")") 
+-- Much better.
+util.argcheck = function (value, num, ...)
+   assert(type(num) == 'number', "Bad argument #2 to 'argcheck' (number expected, got "..type(num)..")")
 
-   for i=1,select("#", ...) do 
-      if type(value) == select(i, ...) then return end 
-   end 
+   for i=1,select("#", ...) do
+      if type(value) == select(i, ...) then return true end
+   end
 
-   local types = table.concat({...}, ", ") 
-   local name = string.match(debug.traceback(2,2,0), ": in function [`<](.-)['>]") 
-   error(("Bad argument #%d to '%s' (%s expected, got %s"):format(num, name, types, type(value)), 3) 
+   local types = table.concat({...}, ", ")
+   local name = string.match(debug.traceback(2,2,0), ": in function [`<](.-)['>]")
+   error(("Bad argument #%d to '%s' (%s expected, got %s"):format(num, name, types, type(value)), 3)
 end
 
 local t = {}
 
--- Note: Timid flags imply that existing keys won't be clobbered. 
--- Shallow copy. Keeps subtables as pointers, so changes will propagate. More memory efficient than clone, but prone to error. 
-t.copy = function (src,dest,timid) 
-   dest = type(dest) == "table" and dest or {} 
-   for k,v in pairs(src) do 
-      dest[k] = (timid and dest[k] ~= nil and dest[k]) or v 
-   end 
-   return dest 
-end 
+-- Note: Timid flags imply that existing keys won't be clobbered.
+-- Shallow copy. Keeps subtables as pointers, so changes will propagate. More memory efficient than clone, but prone to error.
+t.copy = function (src,dest,timid)
+   dest = type(dest) == "table" and dest or {}
+   for k,v in pairs(src) do
+      dest[k] = (timid and dest[k] ~= nil and dest[k]) or v
+   end
+   return dest
+end
 
 -- Deep copy. Functions and userdata are kept as pointers, but that's about it. Eats memory if abused.
 -- Infinite recursion is avoided by an encounter table - if recursion is detected it just adds a reference.
--- Note: Shallow implies that tables are skipped completely (mostly for the sake of metatable sanity) 
-t.clone = function (src,dest,timid,shallow,enc) 
+-- Note: Shallow implies that tables are skipped completely (mostly for the sake of metatable sanity)
+t.clone = function (src,dest,timid,shallow,enc)
 	enc = enc or {[tostring(_ENV or _G)] = (_ENV or _G)} -- recurse check
-	dest = type(dest) == "table" and dest or {} 
-	for k,v in pairs(src) do 
+	dest = type(dest) == "table" and dest or {}
+	for k,v in pairs(src) do
 		if type(v) == "table" and not shallow then
 			local e = tostring(v)
 			enc[e] = enc[e] or t.clone(v, dest[k], timid, nil, enc)
 			dest[k] = (timid and type(dest[k]) ~= "nil" and dest[k]) or enc[e]
 		else
-			dest[k] = (timid and type(dest[k]) ~= "nil" and dest[k]) or v 
-		end 
-	end 
-	return dest 
+			dest[k] = (timid and type(dest[k]) ~= "nil" and dest[k]) or v
+		end
+	end
+	return dest
 end
 
-t.combine = function (src,dest) 
+t.combine = function (src,dest)
 	local dest = type(dest) == "table" and dest or {}
 	t.clone(src,dest)
 	local mt = (getmetatable(src) or {}).__index or {}
 	t.clone(mt,dest,true)
 	return dest
-end 
+end
 
 -- Combine multiple tables into a single metaindex. Returns a setmetatable()-ready table with index.
 -- Usage: setmetatable(target,t.shadow(t1,t2,...)) == setmetatable(target,{__index = {t1 .. t2 .. ...}})
@@ -106,7 +106,7 @@ t.shadow = function (...)
 	local dmt = {}
 	local dest = {}
 	local enc = {[tostring(_ENV or _G)] = (_ENV or _G)} -- keep memory usage down a bit by preserving the encounter table for clone()
-	
+
 	while src[1] do
 		local t = table.remove(src)
 		local mt = getmetatable(t)
@@ -125,7 +125,7 @@ t.spairs = function (t,f)
 	local r = {}
 	for key in pairs(t) do r[#r + 1] = key; end
 	r = table.sort(r,f)
-	
+
 	local i = 0
 	return function ()
 		i = i + 1
@@ -221,6 +221,6 @@ util.Init = function (self)
 	end
 	setmetatable(_ENV or _G, self.table.shadow(self))
 	return self
-end 
+end
 
-return util 
+return util
