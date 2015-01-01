@@ -39,4 +39,13 @@ function m.explode (s, pattern)
 	return unpack(t)
 end
 
+-- Macro for quick MD5 hashing (Probably the only Moai-specific method in the utils...)
+function m.hash (data)
+   local writer = MOAIHashWriter.new()
+   writer:openMD5()
+   writer:write(data)
+   writer:close()
+   return writer:getHashHex()
+end
+
 return m
