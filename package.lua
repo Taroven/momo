@@ -2,7 +2,7 @@ local c = {}
 local concat = concat or table.concat
 
 c.path = {
-	"?", "?.lua"
+	"?", "?.lua", "?/init.lua", "?/?.lua"
 }
 
 c.BuildPath = function (self)
@@ -25,3 +25,5 @@ c.RemovePath = function (self, path)
 		if v == path then return table.remove(self.paths,i) end
 	end
 end
+
+return c
