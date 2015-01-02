@@ -30,10 +30,10 @@ end
 
 -- sorted and indented print macro
 function t.print (t,tab,enc)
-	if util then
-		util.argcheck(t,1,"table")
-		util.argcheck(tab,2,"number","nil")
-		util.argcheck(enc,3,"table","nil")
+	if util and util.debug then
+		argcheck(t,1,"table")
+		argcheck(tab,2,"number","nil")
+		argcheck(enc,3,"table","nil")
 	end
 	tab = tab or 0
 	enc = enc or {}
@@ -61,6 +61,6 @@ function t.print (t,tab,enc)
 end
 
 -- Compatibility issue.
-t.concat = table.concat or concat
+table.concat = table.concat or concat
 
 return t

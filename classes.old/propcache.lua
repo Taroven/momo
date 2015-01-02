@@ -4,24 +4,24 @@
 		local cache = propcache.new()
 		local prop, index = cache()
 		prop:Remove()
-		
+
 		local defaults = function (self,prop)
 			prop:setStuff(self.stuff)
 		end
 		cache:SetDefaults(defaults) or cache._onassign = defaults
-		
+
 		local prop, index = cache()
 		prop:getLoc() == 150,150
 		defaults.setLoc = {0,0} -- K/V pairs go after indexed pairs, so this case would be completely accurate.
 		prop:OnAssign() -- Force defaults
 		prop:getLoc() == 0,0
-		cache:Remove(index) 
-	
+		cache:Remove(index)
+
 	Usage (grid):
 		local cache = propcache.new(3) -- Number of dimensions can be 1, 2, or 3 (default 1)
 		local prop, x, y, z = cache(1,2,3) == prop, 1, 2, 3
 		prop:Remove() or cache:Remove(x,y,z)
-		
+
 	Usage (advanced):
 		local cache = propcache.new({
 			set = function (self, ...) end,
@@ -39,44 +39,44 @@ local c = class("propcache")
 c.initialize = function (self, dimensions)
 	self._active = {}
 	self._cached = {}
-	
+
 	self._layer = layer
 	self._interface = {
 		Remove = function (self) return self._cache:Remove(self, unpack(self._coords)) end,
-	
+
 		SetBatch = function (self, t)
 			for k,v in pairs(t or {}) do
 				if tonumber(k) then self[v[1]](self,unpack(v[2]))
 				else self[k](self,unpack(v)) end
 			end
 		end,
-	
+
 		OnAssign = function (self, ...)
 			return self._cache._onassign(self, ...)
 		end,
-		
+
 		OnRemove = function (self)
 			return self._cache._onremove(self)
 		end,
-		
+
 		OnAcquire = function (self)
 			return self._cache._onacquire(self)
 		end,
-	
+
 		Show = function (self)
 			if self._cache._layer then
 				self._layer = self._cache._layer
 				return self._layer:insertProp(self)
 			end
 		end,
-	
+
 		Hide = function (self)
 			if self._layer then
 				self._layer:removeProp(self)
 				self._layer = nil
 			end
 		end,
-	
+
 		Toggle = function (self)
 			if self._layer then return self:Hide()
 			else return self:Show() end
@@ -91,11 +91,11 @@ end
 
 newprop = function (self, ...)
 	local prop = table.remove(self._cached) or (self._propclass or MOAIProp2D).new()
-	
+
 	prop._cache = self
 	prop._coords = {...}
 	prop:setInterface(self._interface)
-	
+
 	prop:OnAssign()
 	table.insert(self._active, prop)
 	return prop
@@ -126,37 +126,37 @@ local map = {
 			self._cachemap[k] = prop
 			return prop, k
 		end,
-		
+
 		get = function (self, x)
 			return self._cachemap[x]
 		end,
-		
+
 		dimensions = 1,
 	},
-	
+
 	[2] = {
 		set = function (self, prop, x, y)
 			self._cachemap[x][y] = prop
 			return prop
 		end,
-		
+
 		get = function (self, x, y)
 			return self._cachemap[x][y]
 		end,
-		
+
 		dimensions = 2,
 	},
-	
+
 	[3] = {
 		set = function (self, prop, x, y, z)
 			self._cachemap[x][y][z] = prop
 			return prop
 		end,
-		
+
 		get = function (self, x, y, z)
 			return self._cachemap[x][y][z]
 		end,
-		
+
 		dimensions = 3,
 	},
 }
@@ -181,12 +181,12 @@ end
 
 -- Sets the mapping function to one of the defaults or a custom get/set table.
 c.SetMapping = function (self, t)
-	--util.argcheck(t, 2, "table", "number", "nil")
+	--argcheck(t, 2, "table", "number", "nil")
 	t = tonumber(t or 1) and map[t] or t
 	self.Find = t.get or t.find or t.Get or t.Find
 	self.Set = t.set or t.Set
 	self._dimensions = t.dimensions
-	
+
 	self._cachemap = setmetatable({},{
 		__index = cachemap,
 		level = 1,

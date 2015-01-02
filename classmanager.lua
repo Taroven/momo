@@ -14,8 +14,8 @@ local obj = class.Object
 class.config = class("Config")()
 
 obj.Log = function (self, level, method, ...)
-	util.argcheck(method,2,'string')
-	util.argcheck(level,3,'number','nil')
+	argcheck(method,2,'string')
+	argcheck(level,3,'number','nil')
 	return log(self, level, method, ...)
 end
 

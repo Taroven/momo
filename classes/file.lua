@@ -15,7 +15,7 @@ local ts = function (s)
 end
 
 c.initialize = function (self, path)
-	util.argcheck(path, 2, 'string')
+	argcheck(path, 2, 'string')
 	self:Set('file.path', path)
 	self:Read()
 	return self

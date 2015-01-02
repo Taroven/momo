@@ -3,8 +3,8 @@ local fs = {paths = {}}
 local util = require "util"
 
 fs.AddPath = function (self, tag, path)
-	util.argcheck(path,3,"string")
-	util.argcheck(tag,2,"string")
+	argcheck(path,3,"string")
+	argcheck(tag,2,"string")
 	local tag = string.match(tag,"(%b[])") or ("[" .. tag .. "]")
 	self.paths[tag] = path
 	return tag, path
@@ -51,14 +51,14 @@ fs.AffirmFile = function (self, ...)
 end
 
 fs.GetFileHandle = function (self, path, mode)
-	util.argcheck(path,2,"string")
-	util.argcheck(mode,3,"string","nil")
+	argcheck(path,2,"string")
+	argcheck(mode,3,"string","nil")
 	self:AffirmFile(path)
 	return assert(io.open(path,mode))
 end
 
 fs.Read = function (self, path, lines)
-	util.argcheck(path,2,"string")
+	argcheck(path,2,"string")
 	local exists = self:AffirmFile(path)
 	if exists then
 		local file = self:GetFileHandle(path)
@@ -78,8 +78,8 @@ fs.Read = function (self, path, lines)
 end
 
 fs.Write = function (self, s, path, append)
-	util.argcheck(s,2,"string","table")
-	util.argcheck(path,3,"string")
+	argcheck(s,2,"string","table")
+	argcheck(path,3,"string")
 	local file = self:GetFileHandle(path, append and 'a+' or 'w+')
 	local src = type(s) == "table" and table.concat(s,"\n") or s
 	if file and src then

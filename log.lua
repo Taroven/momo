@@ -25,7 +25,7 @@ local pop = function ()
 end
 
 local push = function (obj, level, method, ...)
-	util.argcheck(self,1,"table")
+	argcheck(self,1,"table")
 	local t = {...}
 	local entry = {}
 	for i,v in ipairs(t) do
@@ -35,7 +35,7 @@ local push = function (obj, level, method, ...)
 	entry.level = type(level) == "number" and level or 2
 	entry.method = method
 	entry.obj = obj
-	
+
 	stack[#stack + 1] = entry
 	return pop()
 end
@@ -43,7 +43,7 @@ end
 local log = {}
 
 log.SetLevel = function (level)
-	util.argcheck(level,1,"number","nil")
+	argcheck(level,1,"number","nil")
 	errorlevel = level or lastlevel
 	pop()
 end

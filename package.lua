@@ -11,7 +11,7 @@ c.BuildPath = function (self)
 end
 
 c.AddPath = function (self, path)
-	util.argcheck(path,2,"string")
+	argcheck(path,2,"string")
 	for i,v in ipairs(self.path) do
 		if v == path then return v end
 	end
@@ -20,7 +20,7 @@ c.AddPath = function (self, path)
 end
 
 c.RemovePath = function (self, path)
-	util.argcheck(path,2,"string")
+	argcheck(path,2,"string")
 	for i,v in ipairs(self.path) do
 		if v == path then return table.remove(self.paths,i) end
 	end

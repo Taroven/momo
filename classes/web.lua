@@ -5,7 +5,7 @@ class.require('path')
 local c = class('web','tag')
 local util = util or require('util')
 local escape = string.escape or util.string.escape
-local ac = util.argcheck
+local ac = argcheck
 
 c.initialize = function (self, prefix)
 	local prefix = self:OptSet('web.prefix',prefix,'')
