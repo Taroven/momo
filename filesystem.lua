@@ -2,6 +2,8 @@ local fs = {paths = {}}
 
 local util = require "util"
 
+local assert, loadstring = assert, loadstring
+
 -- TODO: Merge into class?
 
 function fs:AddPath (tag, path)
