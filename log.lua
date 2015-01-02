@@ -1,7 +1,5 @@
 if _LOG then return _LOG end
 
-local util = util or require"util"
-
 local errorlevel,lastlevel
 local errorlevels = {
 	"DEBUG",

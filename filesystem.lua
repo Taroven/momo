@@ -3,13 +3,14 @@ local fs = {paths = {}}
 local util = require "util"
 
 local assert, loadstring = assert, loadstring
+local match, gsub, concat = string.match, string.gsub, (table.concat or concat)
 
 -- TODO: Merge into class?
 
 function fs:AddPath (tag, path)
 	argcheck(path,3,"string")
 	argcheck(tag,2,"string")
-	local tag = string.match(tag,"(%b[])") or ("[" .. tag .. "]")
+	local tag = match(tag,"(%b[])") or ("[" .. tag .. "]")
 	self.paths[tag] = path
 	return tag, path
 end
@@ -18,17 +19,17 @@ function fs:Path (...)
 	local t = {...}
 	local sep
 	for i,v in ipairs(t) do
-		local s = string.match(v,"([/\\])")
+		local s = match(v,"([/\\])")
 		sep = sep or s
-		t[i] = string.gsub(v,"%b[]",self.paths)
+		t[i] = gsub(v,"%b[]",self.paths)
 	end
 	sep = sep or self.pathsep or "/"
-	local path = string.gsub(table.concat(t, sep), "[/\\]+", sep)
+	local path = gsub(concat(t, sep), "[/\\]+", sep)
 	return path
 end
 
 function fs:GetLeadingPath (...)
-	return string.match(self:Path(...),"(.+)[/\\].+$")
+	return match(self:Path(...),"(.+)[/\\].+$")
 end
 
 function fs:AffirmPath (...)
@@ -85,7 +86,7 @@ function fs:Write (s, path, append)
 	argcheck(s,2,"string","table")
 	argcheck(path,3,"string")
 	local file = self:GetFileHandle(path, append and 'a+' or 'w+')
-	local src = type(s) == "table" and table.concat(s,"\n") or s
+	local src = type(s) == "table" and concat(s,"\n") or s
 	if file and src then
 		file:write(s)
 		file:flush()
