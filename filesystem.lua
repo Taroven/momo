@@ -2,7 +2,9 @@ local fs = {paths = {}}
 
 local util = require "util"
 
-fs.AddPath = function (self, tag, path)
+-- TODO: Merge into class?
+
+function fs:AddPath (tag, path)
 	argcheck(path,3,"string")
 	argcheck(tag,2,"string")
 	local tag = string.match(tag,"(%b[])") or ("[" .. tag .. "]")
@@ -10,7 +12,7 @@ fs.AddPath = function (self, tag, path)
 	return tag, path
 end
 
-fs.Path = function (self, ...)
+function fs:Path (...)
 	local t = {...}
 	local sep
 	for i,v in ipairs(t) do
@@ -23,17 +25,17 @@ fs.Path = function (self, ...)
 	return path
 end
 
-fs.GetLeadingPath = function (self, ...)
+function fs:GetLeadingPath (...)
 	return string.match(self:Path(...),"(.+)[/\\].+$")
 end
 
-fs.AffirmPath = function (self, ...)
+function fs:AffirmPath (...)
 	local path = self:Path(...)
 	local partial = self:GetLeadingPath(path)
 	MOAIFileSystem.affirmPath(partial)
 end
 
-fs.AffirmFile = function (self, ...)
+function fs:AffirmFile (...)
 	local path = self:Path(...)
 	self:AffirmPath(path)
 	return MOAIFileSystem.checkFileExists(path)
@@ -50,14 +52,14 @@ fs.AffirmFile = function (self, ...)
 	--]]
 end
 
-fs.GetFileHandle = function (self, path, mode)
+function fs:GetFileHandle (path, mode)
 	argcheck(path,2,"string")
 	argcheck(mode,3,"string","nil")
 	self:AffirmFile(path)
 	return assert(io.open(path,mode))
 end
 
-fs.Read = function (self, path, lines)
+function fs:Read (path, lines)
 	argcheck(path,2,"string")
 	local exists = self:AffirmFile(path)
 	if exists then
@@ -77,7 +79,7 @@ fs.Read = function (self, path, lines)
 	end
 end
 
-fs.Write = function (self, s, path, append)
+function fs:Write (s, path, append)
 	argcheck(s,2,"string","table")
 	argcheck(path,3,"string")
 	local file = self:GetFileHandle(path, append and 'a+' or 'w+')
@@ -90,7 +92,7 @@ fs.Write = function (self, s, path, append)
 	end
 end
 
-fs.Load = function (self, path)
+function fs:Load (path)
 	local s = self:ReadFile(path)
 	if s then
 		return assert(loadstring(s))
