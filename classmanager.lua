@@ -8,7 +8,6 @@ class = class or require"lash"
 
 local log = log or require"log"
 local util = util or require 'util'
-local rawset,rawget = rawset,rawget
 
 local obj = class.Object
 class.config = class("Config")()
