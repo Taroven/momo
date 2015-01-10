@@ -6,6 +6,8 @@
 local class = require"lash"
 local log = require"log"
 
+class.classpath = "momo.classes"
+
 function class.Object:Log (self, level, method, ...)
 	argcheck(method,2,'string')
 	argcheck(level,3,'number','nil')
